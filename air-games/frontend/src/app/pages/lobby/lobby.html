@@ -1,0 +1,64 @@
+<div class="lobby-container">
+    <div class="lobby-header">
+        <button class="back-btn" routerLink="/">BACK</button>
+        <h1>GAME LOBBY</h1>
+    </div>
+
+    <!-- Step 1: Select Game -->
+    <div class="game-selection-step" *ngIf="!isGamePinned">
+        <h2 class="step-title">STEP 1: CHOOSE YOUR MINI-GAME</h2>
+        <div class="game-grid">
+            <div class="game-card pixel-card" *ngFor="let game of games" (click)="selectGame(game.id)">
+                <div class="game-icon">{{game.icon}}</div>
+                <h3>{{game.name}}</h3>
+                <p>{{game.description}}</p>
+                <div class="game-info">
+                    <span>{{game.players}} PLAYERS</span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Step 2: Share and Wait -->
+    <div class="lobby-content" *ngIf="isGamePinned">
+        <div class="qr-section pixel-card">
+            <h3>STEP 2: SCAN & JOIN</h3>
+
+            <div class="qr-wrapper" *ngIf="qrCode && roomCode !== 'ERROR'">
+                <img [src]="qrCode" alt="Join QR Code">
+            </div>
+
+            <div class="room-code" *ngIf="roomCode && roomCode !== 'ERROR'">
+                <span>ROOM CODE:</span>
+                <h2 class="neon-text">{{roomCode}}</h2>
+            </div>
+
+            <div class="instructions" *ngIf="roomCode && roomCode !== 'ERROR'">
+                <p>SHARE THIS QR CODE WITH YOUR FRIENDS</p>
+                <p>OR ASK THEM TO ENTER THE CODE AT AIRGAMES.APP</p>
+            </div>
+        </div>
+
+        <div class="players-section pixel-card">
+            <h3>PLAYERS ({{players.length}})</h3>
+            <div class="players-list">
+                <div class="player-item" *ngFor="let player of players">
+                    <div class="player-avatar">{{player.name ? player.name[0].toUpperCase() : 'P'}}</div>
+                    <div class="player-name">{{player.name || 'ANON PLAYER'}}</div>
+                    <div class="status-dot"></div>
+                </div>
+                <div class="no-players" *ngIf="players.length === 0"
+                    style="text-align: center; color: #555; padding: 40px;">
+                    WAITING FOR PLAYERS...
+                </div>
+            </div>
+
+            <div class="lobby-actions">
+                <button class="start-btn primary-btn" [disabled]="players.length === 0" (click)="startGame()">START
+                    {{selectedGameId?.replace('-', ' ')?.toUpperCase()}}</button>
+                <p style="text-align: center; font-size: 10px; margin-top: 20px; color: #444; cursor: pointer; text-decoration: underline;"
+                    (click)="isGamePinned = false">CHANGE GAME</p>
+            </div>
+        </div>
+    </div>
+</div>

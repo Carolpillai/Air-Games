@@ -1,0 +1,96 @@
+<div class="lobby-container">
+  <nav class="navbar">
+    <div class="nav-left">
+      <a routerLink="/" class="nav-link">← Home</a>
+    </div>
+    <div class="nav-center">
+      <h1 class="logo">AIR GAMES</h1>
+    </div>
+  </nav>
+
+  <div class="lobby-content">
+    <!-- Create Room Form -->
+    <div *ngIf="!roomCode" class="create-room-section">
+      <h2 class="section-title">CREATE ROOM</h2>
+      <div class="form-group">
+        <label>Your Name</label>
+        <input 
+          type="text" 
+          [(ngModel)]="playerName" 
+          placeholder="Enter your name"
+          class="pixel-input"
+          maxlength="20"
+        />
+      </div>
+      <div class="form-group">
+        <label>Select Game</label>
+        <select [(ngModel)]="gameType" class="pixel-select">
+          <option value="air-pong">Air Pong</option>
+          <option value="multiplayer-snake">Multiplayer Snake</option>
+          <option value="air-racing">Air Racing</option>
+          <option value="space-shooter">Space Shooter</option>
+          <option value="air-football">Air Football</option>
+        </select>
+      </div>
+      <button 
+        class="btn-primary" 
+        (click)="createRoom()"
+        [disabled]="loading"
+      >
+        {{ loading ? 'CREATING...' : 'CREATE ROOM' }}
+      </button>
+      <p *ngIf="error" class="error">{{ error }}</p>
+    </div>
+
+    <!-- Room Display -->
+    <div *ngIf="roomCode" class="room-section">
+      <div class="room-header">
+        <h2 class="room-code">ROOM CODE: {{ roomCode }}</h2>
+        <button class="btn-copy" (click)="copyJoinUrl()">COPY LINK</button>
+      </div>
+
+      <div class="qr-section">
+        <h3>SCAN TO JOIN</h3>
+        <div class="qr-container">
+          <img [src]="qrCode" alt="QR Code" class="qr-code" />
+        </div>
+        <p class="qr-instructions">Players scan this QR code with their phone to join</p>
+        <div class="join-url-display">
+          <p class="url-label">Or enter this URL manually:</p>
+          <div class="url-box">
+            <code class="join-url">{{ joinUrl }}</code>
+            <button class="btn-copy-small" (click)="copyJoinUrl()" title="Copy URL">📋</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="players-section">
+        <h3>PLAYERS ({{ players.length }}/{{ getMaxPlayers() }})</h3>
+        <div class="players-list">
+          <div 
+            *ngFor="let player of players" 
+            class="player-card"
+            [style.border-color]="player.playerColor"
+          >
+            <div class="player-indicator" [style.background-color]="player.playerColor"></div>
+            <span class="player-name">{{ player.playerName }}</span>
+            <span *ngIf="player.isHost" class="host-badge">HOST</span>
+          </div>
+        </div>
+      </div>
+
+      <div *ngIf="isHost" class="start-section">
+        <button 
+          class="btn-start" 
+          (click)="startGame()"
+          [disabled]="players.length < 2"
+        >
+          START GAME
+        </button>
+        <p *ngIf="players.length < 2" class="warning">Need at least 2 players to start</p>
+      </div>
+
+      <p *ngIf="error" class="error">{{ error }}</p>
+    </div>
+  </div>
+</div>

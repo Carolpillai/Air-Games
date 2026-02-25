@@ -1,0 +1,122 @@
+.lobby-container {
+    padding: 120px 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 10;
+}
+
+.step-title {
+    font-family: var(--font-hero);
+    font-size: 18px;
+    text-align: center;
+    color: var(--primary-color);
+    margin-bottom: 60px;
+}
+
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 30px;
+}
+
+.game-card {
+    background: rgba(0, 0, 0, 0.8);
+    border: 3px solid var(--primary-color);
+    padding: 30px;
+    text-align: center;
+    cursor: pointer;
+}
+
+.game-card:hover {
+    background: rgba(255, 224, 0, 0.1);
+}
+
+.game-card h3 {
+    font-family: var(--font-sub);
+    font-size: 14px;
+    margin-top: 15px;
+}
+
+.game-card p {
+    font-family: var(--font-body);
+    font-size: 20px;
+    color: var(--text-grey);
+}
+
+/* Lobby Room View */
+.lobby-content {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.qr-section,
+.players-section {
+    background: rgba(0, 0, 0, 0.8);
+    border: 3px solid var(--primary-color);
+    padding: 40px;
+    text-align: center;
+}
+
+.qr-wrapper {
+    background: #fff;
+    padding: 15px;
+    display: inline-block;
+    border: 4px solid #000;
+    margin: 20px 0;
+}
+
+.qr-wrapper img {
+    width: 200px;
+    height: 200px;
+    display: block;
+}
+
+.room-code h2 {
+    font-family: var(--font-hero);
+    font-size: 32px;
+    color: var(--primary-color);
+    margin: 10px 0;
+}
+
+.player-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    padding: 15px;
+    background: rgba(255, 255, 255, 0.05);
+    margin-bottom: 15px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.player-avatar {
+    width: 32px;
+    height: 32px;
+    background: var(--primary-color);
+    color: #000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-hero);
+    font-size: 12px;
+}
+
+.player-name {
+    font-family: var(--font-sub);
+    font-size: 12px;
+    color: #fff;
+}
+
+.start-btn {
+    width: 100%;
+    font-size: 20px !important;
+    padding: 25px !important;
+    margin-top: 20px;
+}
+
+@media (max-width: 900px) {
+    .lobby-content {
+        grid-template-columns: 1fr;
+    }
+}

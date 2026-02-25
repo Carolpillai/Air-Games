@@ -1,0 +1,84 @@
+<div class="home-container">
+  <!-- Navbar -->
+  <nav class="navbar">
+    <div class="nav-left">
+      <a routerLink="/" class="nav-link">Games</a>
+      <a href="#how-it-works" class="nav-link">How It Works</a>
+    </div>
+    <div class="nav-center">
+      <h1 class="logo">AIR GAMES</h1>
+    </div>
+    <div class="nav-right">
+      <button class="btn-create" routerLink="/lobby">Create Room</button>
+    </div>
+  </nav>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <div class="stars"></div>
+    <div class="hero-content">
+      <h1 class="hero-title">PLAY WITH YOUR PHONE.<br>WIN ON THE BIG SCREEN.</h1>
+      <p class="hero-subtitle">Scan. Connect. Control. No app needed.</p>
+      <div class="hero-buttons">
+        <button class="btn-primary" routerLink="/lobby">Create Room</button>
+        <button class="btn-secondary" (click)="navigateToHowItWorks()">How It Works</button>
+      </div>
+    </div>
+    
+    <!-- Pixel Landscape -->
+    <div class="pixel-landscape">
+      <div class="cloud cloud-1"></div>
+      <div class="cloud cloud-2"></div>
+      <div class="cloud cloud-3"></div>
+      <div class="ground">
+        <div class="tree tree-1"></div>
+        <div class="tree tree-2"></div>
+        <div class="tree tree-3"></div>
+        <div class="tree tree-4"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Game Selection Grid -->
+  <section class="games-section">
+    <h2 class="section-title">CHOOSE YOUR GAME</h2>
+    <div class="games-grid">
+      <div class="game-card" *ngFor="let game of games" (click)="navigateToLobby(game.id)">
+        <div class="game-icon">{{ game.icon }}</div>
+        <h3 class="game-name">{{ game.name }}</h3>
+        <p class="game-description">{{ game.description }}</p>
+        <div class="game-meta">
+          <span class="game-players">{{ game.players }}</span>
+        </div>
+        <button class="btn-play">PLAY</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- How It Works Section -->
+  <section id="how-it-works" class="how-it-works">
+    <h2 class="section-title">HOW IT WORKS</h2>
+    <div class="steps">
+      <div class="step">
+        <div class="step-number">1</div>
+        <h3>Create Room</h3>
+        <p>Choose a game and create a room on your laptop</p>
+      </div>
+      <div class="step">
+        <div class="step-number">2</div>
+        <h3>Scan QR Code</h3>
+        <p>Players scan the QR code with their phone to join</p>
+      </div>
+      <div class="step">
+        <div class="step-number">3</div>
+        <h3>Control & Play</h3>
+        <p>Your phone becomes a motion controller. Tilt, shake, and move!</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <p>© 2026 Air Games - Built with MEAN Stack</p>
+  </footer>
+</div>

@@ -1,0 +1,25 @@
+#game-container {
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #002200;
+}
+
+.game-overlay {
+    position: absolute;
+    top: 20px;
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    padding: 0 40px;
+    pointer-events: none;
+}
+
+.room-info,
+.instructions {
+    font-family: 'Press Start 2P';
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 10px;
+}

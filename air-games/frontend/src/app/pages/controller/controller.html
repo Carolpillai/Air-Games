@@ -1,0 +1,76 @@
+<div class="stars-bg"></div>
+
+<div class="controller-container" (touchmove)="onTouchMove($event)">
+    <div style="position: absolute; top: 10px; left: 10px; font-size: 8px; color: #444; z-index: 9999;">PIXEL-OS v1.0.8
+    </div>
+
+    <!-- Step 1: Join Room (Enter Name) -->
+    <div class="name-prompt" *ngIf="!connected">
+        <div class="pixel-logo">AIR GAMES</div>
+        <h2>JOIN ROOM</h2>
+        <p class="room-display">ROOM: {{roomCode}}</p>
+
+        <div class="input-group">
+            <input type="text" [(ngModel)]="playerName" placeholder="ENTER USERNAME" class="pixel-input"
+                (keyup.enter)="joinRoom()">
+        </div>
+
+        <div class="error-msg" *ngIf="connectionError" style="color: #ff4444; font-size: 8px; margin-bottom: 20px;">
+            {{connectionError}}</div>
+
+        <button class="join-btn primary-btn" (click)='joinRoom()'>CONNECT</button>
+
+        <p class="wifi-hint">ENSURE YOU ARE ON THE SAME WIFI</p>
+    </div>
+
+    <!-- Step 2: Ready State & Permissions -->
+    <div class="ready-prompt" *ngIf="connected && !isReady">
+        <div class="player-info">HI, {{playerName}}!</div>
+        <p>JOINED ROOM: {{roomCode}}</p>
+
+        <div class="ready-status">
+            <div class="status-box">LINK ESTABLISHED</div>
+        </div>
+
+        <button class="ready-btn secondary-btn" (click)="setReady()">READY & ENABLE SENSORS</button>
+
+        <p class="instructions">CLICK TO ACTIVATE CONTROL INTERFACE</p>
+        <p style="font-size: 7px; color: #666; margin-top: 15px;">* NOTE: MOBILE SENSORS MAY BE BLOCKED OVER HTTP. TOUCH
+            FALLBACK WILL ACTIVATE IF SENSORS FAIL.</p>
+    </div>
+
+    <!-- Step 3: Active Controller -->
+    <div class="active-controller" *ngIf="connected && isReady">
+        <div class="header">
+            <div class="status">
+                <div class="dot online"></div>
+                <span>{{useTouch ? 'TOUCH CONTROL' : 'MOTION CONTROL'}}</span>
+            </div>
+            <div class="player-info">{{playerName}}</div>
+        </div>
+
+        <div class="controls-area">
+            <div class="game-name" *ngIf="currentGameId">{{currentGameId.replace('-', ' ') | uppercase}}</div>
+            <div class="hint">{{instructions}}</div>
+
+            <!-- Interactive Visualizer -->
+            <div class="visualizer" [class.touch-active]="useTouch">
+                <div class="tilt-ball"
+                    [style.transform]="'translate(' + (tiltX * 2.5) + 'px, ' + ((tiltY - 45) * 2.5) + 'px)'"></div>
+                <div class="touch-target" *ngIf="useTouch">DRAG TO MOVE</div>
+            </div>
+
+            <div class="sensor-feedback" *ngIf="false">
+                <span>X: {{tiltX | number:'1.0-0'}}°</span>
+                <span>Y: {{tiltY | number:'1.0-0'}}°</span>
+            </div>
+        </div>
+
+        <div class="footer">
+            ROOM: {{roomCode}} •
+            <span (click)="requestPermissions()" style="text-decoration: underline; cursor: pointer;">RESET</span> •
+            <span *ngIf="useTouch" (click)="forceTiltMode()"
+                style="color: var(--primary-color); text-decoration: underline; cursor: pointer;">FORCE TILT</span>
+        </div>
+    </div>
+</div>

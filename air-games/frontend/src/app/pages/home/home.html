@@ -1,0 +1,41 @@
+<nav class="navbar">
+    <div class="nav-links">
+        <a href="#">GAMES</a>
+        <a href="#">CONTROLS</a>
+    </div>
+    <div class="logo">AIR GAMES</div>
+    <div class="nav-actions">
+        <button routerLink="/lobby">CREATE ROOM</button>
+    </div>
+</nav>
+
+<section class="hero">
+    <div class="hero-content">
+        <h1 class="floating">PLAY WITH YOUR PHONE.<br>WIN ON THE BIG SCREEN.</h1>
+        <p>Scan. Connect. Control. No app needed.</p>
+        <div class="hero-actions">
+            <button class="primary-btn" routerLink="/lobby">CREATE ROOM</button>
+            <button class="secondary-btn" (click)="joinRoomPrompt()">JOIN ROOM</button>
+        </div>
+    </div>
+
+</section>
+
+<section class="game-selection">
+    <h2>SELECT A GAME</h2>
+    <div class="game-grid">
+        <div class="game-card pixel-card" *ngFor="let game of games">
+            <div class="game-icon">{{game.icon}}</div>
+            <h3>{{game.name}}</h3>
+            <p>{{game.description}}</p>
+            <div class="game-info">
+                <span>{{game.players}} PLAYERS</span>
+            </div>
+            <button [routerLink]="['/lobby']" [queryParams]="{game: game.id}">PLAY</button>
+        </div>
+    </div>
+</section>
+
+<footer class="pixel-footer">
+    <p>&copy; 2026 AIR GAMES ARCADE. POWERED BY MOTION SENSORS.</p>
+</footer>

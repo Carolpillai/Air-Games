@@ -1,0 +1,42 @@
+<div class="controller-container">
+  <div class="controller-content">
+    <div class="header">
+      <h1 class="logo">AIR GAMES</h1>
+      <div class="room-info">
+        <p class="room-code">Room: {{ roomCode }}</p>
+        <p class="player-name">{{ playerName }}</p>
+      </div>
+    </div>
+
+    <div class="status-section">
+      <div class="status-indicator" [class.connected]="connected" [class.disconnected]="!connected">
+        <div class="status-dot"></div>
+        <span>{{ connected ? 'CONNECTED' : 'DISCONNECTED' }}</span>
+      </div>
+    </div>
+
+    <div class="instructions-section">
+      <h2>CONTROLLER READY</h2>
+      <p class="instructions">{{ instructions || 'Waiting for game to start...' }}</p>
+    </div>
+
+    <div *ngIf="!motionSupported" class="error-section">
+      <p>Motion sensors not supported on this device</p>
+    </div>
+
+    <div *ngIf="motionSupported && !permissionGranted" class="permission-section">
+      <button class="btn-enable" (click)="requestPermission()">
+        ENABLE MOTION CONTROLS
+      </button>
+      <p class="permission-note">Your phone needs permission to use motion sensors</p>
+    </div>
+
+    <div *ngIf="permissionGranted && connected" class="active-section">
+      <div class="motion-indicator">
+        <div class="phone-icon">📱</div>
+        <p>Motion controls active</p>
+        <p class="hint">Move your phone to control the game!</p>
+      </div>
+    </div>
+  </div>
+</div>

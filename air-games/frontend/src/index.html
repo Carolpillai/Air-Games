@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>AIR GAMES | Play with your Phone</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Silkscreen:wght@400;700&family=VT323&display=swap"
+    rel="stylesheet" media="print" onload="this.media='all'">
+  <style>
+    body {
+      background: #0a0a0f;
+      margin: 0;
+      padding: 0;
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      font-family: sans-serif;
+    }
+
+    .boot-loader {
+      text-align: center;
+    }
+  </style>
+</head>
+
+<body>
+  <app-root>
+    <div class="boot-loader">
+      <h3>AIR GAMES</h3>
+      <p>LOADING SYSTEM...</p>
+    </div>
+  </app-root>
+  <div id="debug-log"
+    style="position: fixed; bottom: 0; left: 0; width: 100%; background: rgba(255,0,0,0.8); color: white; font-size: 8px; z-index: 10000; pointer-events: none; max-height: 50px; overflow: hidden;">
+  </div>
+  <script>
+    window.onerror = function (msg, url, line) {
+      const log = document.getElementById('debug-log');
+      if (log) log.innerHTML = 'ERROR: ' + msg + ' (line ' + line + ')';
+    };
+  </script>
+</body>
+
+</html>

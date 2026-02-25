@@ -1,0 +1,97 @@
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 60px;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 1000;
+    background: rgba(5, 5, 26, 0.4);
+}
+
+.logo {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    color: var(--primary-yellow);
+    font-size: 18px;
+    letter-spacing: 2px;
+}
+
+.nav-links {
+    display: flex;
+    gap: 30px;
+}
+
+.nav-links a {
+    font-family: 'Press Start 2P', cursive;
+    font-size: 10px;
+    color: #fff;
+    text-decoration: none;
+    text-transform: uppercase;
+}
+
+.hero {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+}
+
+.hero-content h1 {
+    font-size: clamp(18px, 5vw, 40px);
+    margin-bottom: 20px;
+}
+
+.hero-content p {
+    font-size: 14px;
+    margin-bottom: 40px;
+    color: #fff;
+    opacity: 0.8;
+}
+
+.hero-actions {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    margin-top: 40px;
+}
+
+.primary-btn,
+.secondary-btn {
+    min-width: 200px;
+    padding: 15px 30px;
+}
+
+.game-selection {
+    padding: 100px 40px;
+}
+
+.game-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.game-card {
+    background: rgba(0, 0, 0, 0.7);
+    border: 2px solid #333;
+    padding: 30px;
+    text-align: center;
+}
+
+.game-card:hover {
+    border-color: var(--primary-yellow);
+}
+
+.game-icon {
+    font-size: 40px;
+    margin-bottom: 20px;
+}

@@ -1,0 +1,117 @@
+:root {
+  --primary-yellow: #FFE000;
+  --bg-deep: #05051a;
+  --font-pixel: 'Press Start 2P', cursive;
+}
+
+body {
+  background: var(--bg-deep);
+  color: #fff;
+  font-family: var(--font-pixel);
+  margin: 0;
+  overflow-x: hidden;
+  min-height: 100vh;
+}
+
+/* 2000s Retro Sky */
+.stars-bg {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -3;
+  background: linear-gradient(to bottom, #05051a 0%, #1a1a4a 100%);
+}
+
+.stars-bg::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-image:
+    radial-gradient(1.5px 1.5px at 10% 10%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 30% 25%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 50% 15%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 70% 35%, #fff, transparent),
+    radial-gradient(1.5px 1.5px at 90% 20%, #fff, transparent);
+  background-size: 300px 300px;
+}
+
+/* Simple Pixel Ground - Removed Black Box */
+.pixel-landscape {
+  display: none;
+}
+
+/* The Trees */
+.trees-container {
+  position: fixed;
+  bottom: 100px;
+  left: 0;
+  width: 100%;
+  height: 100px;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.tree {
+  position: absolute;
+  bottom: 0;
+  width: 32px;
+  height: 64px;
+  background: #0d3d1e;
+  /* Dark pixel green */
+  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
+  /* Simple triangle tree */
+  box-shadow: 0 10px 0 #1a1a2e;
+  /* Trunk shadow */
+}
+
+/* Positioning 3 trees */
+.tree-1 {
+  left: 15%;
+  height: 80px;
+  width: 40px;
+}
+
+.tree-2 {
+  left: 45%;
+  height: 60px;
+  width: 30px;
+  opacity: 0.8;
+}
+
+.tree-3 {
+  right: 20%;
+  height: 90px;
+  width: 45px;
+}
+
+/* HUD Typography */
+h1 {
+  color: var(--primary-yellow) !important;
+  font-size: 24px;
+  text-shadow: 3px 3px 0px #000;
+  text-transform: uppercase;
+}
+
+button {
+  font-family: var(--font-pixel);
+  background: #000;
+  color: var(--primary-yellow) !important;
+  border: 3px solid var(--primary-yellow) !important;
+  padding: 12px 24px;
+  cursor: pointer;
+  font-size: 12px;
+  text-transform: uppercase;
+  box-shadow: 4px 4px 0px #000;
+}
+
+button:hover {
+  background: var(--primary-yellow);
+  color: #000 !important;
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0px #000;
+}

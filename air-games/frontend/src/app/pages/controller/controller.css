@@ -1,0 +1,64 @@
+.controller-container {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 30px;
+    background: radial-gradient(circle at bottom, #1a2060 0%, #0d1033 100%);
+    overflow: hidden;
+}
+
+.pixel-logo {
+    font-family: var(--font-hero);
+    font-size: 16px;
+    color: var(--primary-color);
+    margin-bottom: 40px;
+}
+
+.pixel-input {
+    background: #000;
+    border: 3px solid var(--primary-color);
+    padding: 15px;
+    color: var(--primary-color);
+    width: 100%;
+    max-width: 250px;
+    font-family: var(--font-sub);
+    font-size: 12px;
+    margin-bottom: 20px;
+    outline: none;
+}
+
+.join-btn,
+.ready-btn {
+    width: 100%;
+    max-width: 250px;
+}
+
+.player-info {
+    font-family: var(--font-hero);
+    font-size: 18px;
+    color: var(--primary-color);
+}
+
+.game-name {
+    font-family: var(--font-hero);
+    font-size: 14px;
+    color: var(--primary-color);
+}
+
+.hint {
+    font-family: var(--font-body);
+    font-size: 20px;
+    color: var(--text-grey);
+}
+
+.visualizer {
+    border: 4px solid var(--primary-color);
+    background: rgba(0, 0, 0, 0.5);
+}
+
+.tilt-ball {
+    background: var(--primary-color);
+    box-shadow: 0 0 15px var(--primary-color);
+}

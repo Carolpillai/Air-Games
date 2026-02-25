@@ -1,0 +1,44 @@
+/* Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Press Start 2P', cursive;
+  background-color: #0a0a0f;
+  color: #e8ff00;
+  overflow-x: hidden;
+}
+
+/* Pixel Art Button Styles */
+button {
+  font-family: 'Press Start 2P', cursive;
+  cursor: pointer;
+  border: none;
+  outline: none;
+  transition: all 0.1s;
+}
+
+button:active {
+  transform: scale(0.95);
+}
+
+/* Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 10px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0a0a0f;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #e8ff00;
+  border-radius: 0;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #b8d000;
+}
