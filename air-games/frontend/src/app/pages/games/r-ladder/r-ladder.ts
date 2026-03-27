@@ -106,7 +106,7 @@ export class RLadder implements OnInit, OnDestroy {
 
     // ── Socket / room ──────────────────────────────────────────────────────────
     private socket: Socket | null = null;
-    private backendUrl = `http://${window.location.hostname}:3000`;
+    private backendUrl = `https://air-games.onrender.com`;
     roomCode = '';
     qrCodeUrl = '';
     gamePhase: 'waiting' | 'playing' | 'question' | 'result' | 'powerup-anim' | 'won' = 'waiting';

@@ -61,7 +61,7 @@ export class Controller implements OnInit, OnDestroy {
   private drNetTO: any;
 
   private socket: Socket | null = null;
-  private backendUrl = `http://${window.location.hostname}:3000`;
+  private backendUrl = `https://air-games.onrender.com`;
 
   constructor(
     private route: ActivatedRoute,

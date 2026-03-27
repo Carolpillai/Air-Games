@@ -27,7 +27,7 @@ export class Lobby implements OnInit, OnDestroy {
   ];
 
   private socket: Socket | null = null;
-  private backendUrl = `http://${window.location.hostname}:3000`;
+  private backendUrl = `https://air-games.onrender.com`;
 
   constructor(
     private http: HttpClient,
