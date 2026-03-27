@@ -1,9 +1,9 @@
 <nav class="navbar">
     <div class="nav-links">
-        <a href="#">GAMES</a>
+        <a href="#games">GAMES</a>
         <a href="#">CONTROLS</a>
     </div>
-    <div class="logo">AIR GAMES</div>
+    <div class="logo">COMPUTER LADDER</div>
     <div class="nav-actions">
         <button routerLink="/lobby">CREATE ROOM</button>
     </div>
@@ -21,8 +21,8 @@
 
 </section>
 
-<section class="game-selection">
-    <h2>SELECT A GAME</h2>
+<section class="game-selection" id="games">
+    <h2>SELECT A GAME.</h2>
     <div class="game-grid">
         <div class="game-card pixel-card" *ngFor="let game of games">
             <div class="game-icon">{{game.icon}}</div>
@@ -30,12 +30,14 @@
             <p>{{game.description}}</p>
             <div class="game-info">
                 <span>{{game.players}} PLAYERS</span>
+                <span *ngIf="game.local" class="local-badge">LOCAL</span>
             </div>
-            <button [routerLink]="['/lobby']" [queryParams]="{game: game.id}">PLAY</button>
+            <button *ngIf="!game.local" [routerLink]="['/lobby']" [queryParams]="{game: game.id}">PLAY</button>
+            <button *ngIf="game.local" [routerLink]="['/games', game.id]">PLAY</button>
         </div>
     </div>
 </section>
 
 <footer class="pixel-footer">
-    <p>&copy; 2026 AIR GAMES ARCADE. POWERED BY MOTION SENSORS.</p>
+    <p>&copy; 2026 COMPUTER LADDER ARCADE. POWERED BY MOTION SENSORS.</p>
 </footer>

@@ -1,76 +1,181 @@
-<div class="stars-bg"></div>
+<div class="controller-container">
 
-<div class="controller-container" (touchmove)="onTouchMove($event)">
-    <div style="position: absolute; top: 10px; left: 10px; font-size: 8px; color: #444; z-index: 9999;">PIXEL-OS v1.0.8
-    </div>
-
-    <!-- Step 1: Join Room (Enter Name) -->
-    <div class="name-prompt" *ngIf="!connected">
-        <div class="pixel-logo">AIR GAMES</div>
-        <h2>JOIN ROOM</h2>
-        <p class="room-display">ROOM: {{roomCode}}</p>
-
-        <div class="input-group">
-            <input type="text" [(ngModel)]="playerName" placeholder="ENTER USERNAME" class="pixel-input"
-                (keyup.enter)="joinRoom()">
+    <!-- Step 1: Join Screen -->
+    <div class="join-screen" *ngIf="!connected">
+        <div class="pixel-logo">COMPUTER LADDER</div>
+        <div class="sensor-badge" [class.badge-checking]="gyroChecking" [class.badge-gyro]="hasGyro"
+            [class.badge-nogyro]="hasGyro === false">
+            {{gyroChecking ? 'SCANNING SENSORS...' : (hasGyro ? 'GYRO DETECTED' : 'D-PAD ONLY')}}
         </div>
-
-        <div class="error-msg" *ngIf="connectionError" style="color: #ff4444; font-size: 8px; margin-bottom: 20px;">
-            {{connectionError}}</div>
-
-        <button class="join-btn primary-btn" (click)='joinRoom()'>CONNECT</button>
-
-        <p class="wifi-hint">ENSURE YOU ARE ON THE SAME WIFI</p>
+        <input type="text" [(ngModel)]="playerName" placeholder="ENTER NAME" class="pixel-input">
+        <button class="join-btn" (click)="joinRoom()">JOIN ROOM</button>
+        <p class="error-msg" *ngIf="connectionError">{{connectionError}}</p>
     </div>
 
-    <!-- Step 2: Ready State & Permissions -->
-    <div class="ready-prompt" *ngIf="connected && !isReady">
-        <div class="player-info">HI, {{playerName}}!</div>
-        <p>JOINED ROOM: {{roomCode}}</p>
-
-        <div class="ready-status">
-            <div class="status-box">LINK ESTABLISHED</div>
+    <!-- Step 2: Permission/Ready Screen -->
+    <div class="ready-screen" *ngIf="connected && !isReady">
+        <div class="pixel-logo">CONNECTED</div>
+        <div class="player-info">{{playerName}}</div>
+        <div class="gyro-info-box" [class.nogyro]="!hasGyro">
+            <span class="gyro-icon">{{hasGyro ? '🔄' : '🎮'}}</span>
+            <div class="gyro-text">
+                <div class="gyro-label">{{hasGyro ? 'MOTION CONTROL' : 'D-PAD MODE'}}</div>
+                <div class="gyro-sub">{{sensorStatus}}</div>
+            </div>
         </div>
-
-        <button class="ready-btn secondary-btn" (click)="setReady()">READY & ENABLE SENSORS</button>
-
-        <p class="instructions">CLICK TO ACTIVATE CONTROL INTERFACE</p>
-        <p style="font-size: 7px; color: #666; margin-top: 15px;">* NOTE: MOBILE SENSORS MAY BE BLOCKED OVER HTTP. TOUCH
-            FALLBACK WILL ACTIVATE IF SENSORS FAIL.</p>
+        <button class="ready-btn" (click)="setReady()">I'M READY!</button>
     </div>
 
-    <!-- Step 3: Active Controller -->
-    <div class="active-controller" *ngIf="connected && isReady">
+    <!-- Step 3a: Active Controller — Gyro Mode -->
+    <div class="active-controller gyro-controller" *ngIf="connected && isReady && hasGyro">
         <div class="header">
             <div class="status">
                 <div class="dot online"></div>
-                <span>{{useTouch ? 'TOUCH CONTROL' : 'MOTION CONTROL'}}</span>
+                <span>{{sensorStatus}}</span>
             </div>
             <div class="player-info">{{playerName}}</div>
         </div>
 
         <div class="controls-area">
-            <div class="game-name" *ngIf="currentGameId">{{currentGameId.replace('-', ' ') | uppercase}}</div>
+            <div class="game-name" *ngIf="currentGameId">{{currentGameId.replace('-', ' ')|uppercase}}</div>
             <div class="hint">{{instructions}}</div>
 
-            <!-- Interactive Visualizer -->
-            <div class="visualizer" [class.touch-active]="useTouch">
-                <div class="tilt-ball"
-                    [style.transform]="'translate(' + (tiltX * 2.5) + 'px, ' + ((tiltY - 45) * 2.5) + 'px)'"></div>
-                <div class="touch-target" *ngIf="useTouch">DRAG TO MOVE</div>
-            </div>
+            <!-- R-LADDER Controller -->
+            <ng-container *ngIf="currentGameId === 'r-ladder'; else defaultGyroUI">
+                <div class="rl-controller">
+                    <div class="rl-turn-banner" [style.border-color]="rlTurnColor" *ngIf="rlPhase === 'playing'">
+                        <span class="rl-turn-label" [style.color]="rlTurnColor">
+                            {{ rlIsMyTurn ? 'YOUR TURN' : rlTurnName.toUpperCase() + "'S TURN" }}
+                        </span>
+                    </div>
+                    
+                    <!-- DICE INTERFACE -->
+                    <div class="rl-dice-container" *ngIf="rlPhase === 'playing'" (click)="rlRollDie()" [class.can-roll]="rlIsMyTurn && !rlDiceRolled">
+                        <div class="dice-3d" [class.rolling]="isRollingLocal" [attr.data-face]="rlDiceValue">
+                            <div class="face front"></div>
+                            <div class="face back"></div>
+                            <div class="face left"></div>
+                            <div class="face right"></div>
+                            <div class="face top"></div>
+                            <div class="face bottom"></div>
+                        </div>
+                        <div class="roll-hint-text" *ngIf="rlIsMyTurn && !rlDiceRolled && !isRollingLocal">TAP DICE TO ROLL</div>
+                        <div class="roll-result-text" *ngIf="rlDiceRolled && !isRollingLocal">YOU ROLLED: {{rlDiceValue}}</div>
+                    </div>
 
-            <div class="sensor-feedback" *ngIf="false">
-                <span>X: {{tiltX | number:'1.0-0'}}°</span>
-                <span>Y: {{tiltY | number:'1.0-0'}}°</span>
-            </div>
+                    <!-- QUESTION INTERFACE -->
+                    <div class="rl-question-section" *ngIf="rlPhase === 'question' && rlQuestion">
+                        <div class="rl-q-text">{{rlQuestion.text}}</div>
+                        <div class="rl-ans-grid">
+                            <button class="rl-ans-btn" *ngFor="let opt of rlQuestion.options; let i = index"
+                                (click)="rlAnswer(i)" [disabled]="!rlIsMyTurn">
+                                <span class="rl-ans-lbl">{{['A','B','C'][i]}}</span>
+                                <span class="rl-ans-txt">{{opt}}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </ng-container>
+
+            <ng-template #defaultGyroUI>
+                <div class="visualizer" [class.touch-active]="useTouch">
+                    <div class="tilt-ball" [style.transform]="'translate(' + (tiltX * 2.5) + 'px, ' + ((tiltY - 45) * 2.5) + 'px)'"></div>
+                    <div class="touch-target" *ngIf="useTouch">DRAG TO MOVE</div>
+                </div>
+                
+                <!-- Racing Boost (Gyro Mode) -->
+                <div class="action-zone" *ngIf="currentGameId === 'air-racing'">
+                    <button class="boost-btn" (touchstart)="onRacingBoost(true)" (touchend)="onRacingBoost(false)">
+                        <span>NITRO</span>
+                    </button>
+                </div>
+            </ng-template>
         </div>
 
         <div class="footer">
-            ROOM: {{roomCode}} •
-            <span (click)="requestPermissions()" style="text-decoration: underline; cursor: pointer;">RESET</span> •
-            <span *ngIf="useTouch" (click)="forceTiltMode()"
-                style="color: var(--primary-color); text-decoration: underline; cursor: pointer;">FORCE TILT</span>
+            ROOM: {{roomCode}} • <span (click)="requestPermissions()">RESET</span>
         </div>
     </div>
+
+    <!-- Step 3b: Active Controller — D-PAD mode (no gyro) -->
+    <div class="active-controller dpad-controller" *ngIf="connected && isReady && !hasGyro">
+        <div class="header">
+            <div class="status">
+                <div class="dot online"></div>
+                <span>🎮 D-PAD CONTROL</span>
+            </div>
+            <div class="player-info">{{playerName}}</div>
+        </div>
+
+        <div class="controls-area">
+            <div class="game-name" *ngIf="currentGameId">{{currentGameId.replace('-', ' ')|uppercase}}</div>
+            <div class="hint">{{instructions}}</div>
+
+            <ng-container [ngSwitch]="currentGameId">
+                <div *ngSwitchCase="'r-ladder'" class="rl-controller">
+                    <div class="rl-turn-banner" [style.border-color]="rlTurnColor" *ngIf="rlPhase === 'playing'">
+                        <span class="rl-turn-label" [style.color]="rlTurnColor">
+                            {{ rlIsMyTurn ? 'YOUR TURN' : rlTurnName.toUpperCase() + "'S TURN" }}
+                        </span>
+                    </div>
+                    <div class="rl-dice-container" *ngIf="rlPhase === 'playing'" (click)="rlRollDie()" [class.can-roll]="rlIsMyTurn && !rlDiceRolled">
+                        <div class="dice-3d" [class.rolling]="isRollingLocal" [attr.data-face]="rlDiceValue">
+                            <div class="face front"></div><div class="face back"></div><div class="face left"></div>
+                            <div class="face right"></div><div class="face top"></div><div class="face bottom"></div>
+                        </div>
+                        <div class="roll-hint-text" *ngIf="rlIsMyTurn && !rlDiceRolled && !isRollingLocal">TAP DICE TO ROLL</div>
+                        <div class="roll-result-text" *ngIf="rlDiceRolled && !isRollingLocal">YOU ROLLED: {{rlDiceValue}}</div>
+                    </div>
+                    <div class="rl-question-section" *ngIf="rlPhase === 'question' && rlQuestion">
+                        <div class="rl-q-text">{{rlQuestion.text}}</div>
+                        <div class="rl-ans-grid">
+                            <button class="rl-ans-btn" *ngFor="let opt of rlQuestion.options; let i = index"
+                                (click)="rlAnswer(i)" [disabled]="!rlIsMyTurn">
+                                <span class="rl-ans-lbl">{{['A','B','C'][i]}}</span>
+                                <span class="rl-ans-txt">{{opt}}</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngSwitchCase="'air-racing'" class="racing-dpad-wrap">
+                    <div class="dpad-wrap">
+                        <div class="dpad-row"><button class="dpad-btn dpad-up" (touchstart)="onDpadPress('up')" (touchend)="onDpadRelease('up')">▲</button></div>
+                        <div class="dpad-row dpad-middle">
+                            <button class="dpad-btn dpad-left" (touchstart)="onDpadPress('left')" (touchend)="onDpadRelease('left')">◀</button>
+                            <div class="dpad-center">🏎️</div>
+                            <button class="dpad-btn dpad-right" (touchstart)="onDpadPress('right')" (touchend)="onDpadRelease('right')">▶</button>
+                        </div>
+                        <div class="dpad-row"><button class="dpad-btn dpad-down" (touchstart)="onDpadPress('down')" (touchend)="onDpadRelease('down')">▼</button></div>
+                    </div>
+                    <button class="boost-btn nitro-alone" (touchstart)="onRacingBoost(true)" (touchend)="onRacingBoost(false)">NITRO</button>
+                </div>
+
+                <div *ngSwitchCase="'multiplayer-snake'" class="snake-circle-wrap">
+                    <div class="joystick-container" (touchstart)="onJoystickDown($event)" (touchmove)="onJoystickMove($event)" (touchend)="onJoystickUp()">
+                        <div class="joystick-base">
+                            <div class="j-guide j-up">▲</div><div class="j-guide j-left">◀</div>
+                            <div class="j-guide j-right">▶</div><div class="j-guide j-down">▼</div>
+                            <div class="joystick-knob" [style.transform]="'translate(' + joystickX + 'px, ' + joystickY + 'px)'">
+                                <div class="knob-inner"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div *ngSwitchDefault class="dpad-wrap">
+                    <div class="dpad-row"><button class="dpad-btn dpad-up" (touchstart)="onDpadPress('up')" (touchend)="onDpadRelease('up')">▲</button></div>
+                    <div class="dpad-row dpad-middle">
+                        <button class="dpad-btn dpad-left" (touchstart)="onDpadPress('left')" (touchend)="onDpadRelease('left')">◀</button>
+                        <div class="dpad-center">✛</div>
+                        <button class="dpad-btn dpad-right" (touchstart)="onDpadPress('right')" (touchend)="onDpadRelease('right')">▶</button>
+                    </div>
+                    <div class="dpad-row"><button class="dpad-btn dpad-down" (touchstart)="onDpadPress('down')" (touchend)="onDpadRelease('down')">▼</button></div>
+                </div>
+            </ng-container>
+        </div>
+
+        <div class="footer">ROOM: {{roomCode}} • NO GYRO DETECTED</div>
+    </div>
+
 </div>

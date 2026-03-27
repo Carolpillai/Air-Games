@@ -9,7 +9,7 @@ class SnakeScene extends Phaser.Scene {
   private roomCode!: string;
   private snakes: { [id: string]: { head: Phaser.GameObjects.Rectangle, body: Phaser.GameObjects.Rectangle[], nameText: Phaser.GameObjects.Text, dir: string, nextDir: string, alive: boolean, name: string } } = {};
   private food!: Phaser.GameObjects.Rectangle;
-  private colors = [0xe8ff00, 0x00ff9f, 0xff00ff, 0x00ffff, 0xff8c00];
+  private colors = [0xe8ff00, 0x00ff9f, 0xff00ff, 0x00ffff, 0xff8c00, 0xff4455, 0x44ff99, 0xff8844, 0x88aaff, 0xce93d8];
 
   constructor() {
     super('SnakeScene');
@@ -36,7 +36,6 @@ class SnakeScene extends Phaser.Scene {
       const snake = this.snakes[data.playerId];
 
       if (data.gamma !== undefined && data.beta !== undefined) {
-        // Logic for direction based on tilt
         if (Math.abs(data.gamma) > Math.abs(data.beta)) {
           if (data.gamma > 20) snake.nextDir = 'RIGHT';
           else if (data.gamma < -20) snake.nextDir = 'LEFT';
@@ -91,7 +90,6 @@ class SnakeScene extends Phaser.Scene {
     Object.values(this.snakes).forEach((snake: any) => {
       if (!snake.alive) return;
 
-      // Prevent 180 degree turns
       if (
         (snake.nextDir === 'LEFT' && snake.dir !== 'RIGHT') ||
         (snake.nextDir === 'RIGHT' && snake.dir !== 'LEFT') ||
@@ -109,31 +107,35 @@ class SnakeScene extends Phaser.Scene {
       else if (snake.dir === 'UP') snake.head.y -= 20;
       else if (snake.dir === 'DOWN') snake.head.y += 20;
 
-      // Wrap around
       if (snake.head.x < 0) snake.head.x = 780;
       if (snake.head.x > 780) snake.head.x = 0;
+      if (snake.head.y < 60) snake.head.y = 580;
+      if (snake.head.y > 580) snake.head.y = 60;
 
-      // Enforce "cannot go on top" - hard boundary at y=60
-      if (snake.head.y < 60) snake.head.y = 60;
-      if (snake.head.y > 580) snake.head.y = 40; // Maintain wrap for bottom
-
-      // Update name text position
       snake.nameText.x = snake.head.x;
       snake.nameText.y = snake.head.y - 25;
 
-      // Food collision
-      if (snake.head.x === this.food.x && snake.head.y === this.food.y) {
+      const dist = Phaser.Math.Distance.Between(snake.head.x, snake.head.y, this.food.x, this.food.y);
+      if (dist < 10) {
         this.spawnFood();
         const part = this.add.rectangle(prevX, prevY, 20, 20, snake.head.fillColor);
         snake.body.push(part);
+        
+        // WIN CONDITION: Length 10 (Head + 9 body parts)
+        if (snake.body.length >= 9) {
+          this.add.text(400, 300, `${snake.name} WINS!`, {
+            fontFamily: '"Press Start 2P"',
+            fontSize: '32px',
+            color: '#e8ff00'
+          }).setOrigin(0.5);
+          this.scene.pause();
+        }
       } else if (snake.body.length > 0) {
         const lastPart = snake.body.pop();
         lastPart.x = prevX;
         lastPart.y = prevY;
         snake.body.unshift(lastPart);
       }
-
-      // Self collision or other collision could be added here
     });
   }
 }
@@ -156,6 +158,7 @@ export class MultiplayerSnake implements OnInit, OnDestroy {
   ngOnInit() {
     this.route.queryParams.subscribe(params => {
       this.roomCode = params['room'] || '';
+      if (params['api']) this.backendUrl = params['api'];
       this.initSocket(this.roomCode);
       this.initPhaser(this.roomCode);
     });

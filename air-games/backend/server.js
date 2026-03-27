@@ -176,7 +176,7 @@ io.on('connection', (socket) => {
     }
 
     // Always send the current player list to the newly connected client
-    socket.emit('room-info', { roomCode, players: room.players, gameState: room.gameState });
+    socket.emit('room-info', { roomCode, players: room.players, gameState: room.gameState, gameId: room.gameId });
   });
 
   socket.on('motion-data', (data) => {
@@ -193,6 +193,7 @@ io.on('connection', (socket) => {
     const room = rooms.get(data.roomCode);
     if (room) {
       room.gameState = 'playing';
+      room.gameId = data.gameId;
       io.to(data.roomCode).emit('game-started', data);
     }
   });

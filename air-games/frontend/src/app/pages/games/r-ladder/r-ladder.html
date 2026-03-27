@@ -1,0 +1,247 @@
+<div class="rl-root">
+
+    <!-- ═══════════════════ WAITING ROOM ═══════════════════ -->
+    <div class="waiting-screen" *ngIf="gamePhase === 'waiting'">
+        <div class="rl-stars"></div>
+        <div class="runtime-logo">RUNTIME</div>
+        <h1 class="game-logo">COMPUTER LADDER</h1>
+        <p class="game-sub">CLASSIC CS EDITION — EASY QUESTIONS!</p>
+
+        <div class="qr-area" *ngIf="qrCodeUrl">
+            <img [src]="qrCodeUrl" alt="QR Code" class="qr-img" />
+            <div class="qr-label">SCAN TO JOIN</div>
+        </div>
+
+        <div class="room-code-display">
+            ROOM: <span class="room-code-val">{{roomCode}}</span>
+        </div>
+
+        <div class="waiting-players">
+            <div class="waiting-title">PLAYERS JOINED ({{players.length}}/4)</div>
+            <div class="waiting-cats">
+                <div class="waiting-cat-slot" *ngFor="let p of players; let i = index">
+                    <div class="wcat-avatar" [style.background]="p.color">{{p.name[0]}}</div>
+                    <div class="wcat-name" [style.color]="p.color">{{p.name}}</div>
+                </div>
+                <!-- Empty slots -->
+                <div class="waiting-cat-slot empty" *ngFor="let n of [].constructor(4 - players.length)">
+                    <div class="wcat-avatar" style="background:#333">?</div>
+                    <div class="wcat-name">...</div>
+                </div>
+            </div>
+        </div>
+
+        <button class="pixel-btn start-btn" (click)="onForceStart()" [disabled]="players.length < 2">
+            ▶ START COMPUTER LADDER
+        </button>
+
+        <div class="waiting-hint">WAITING FOR HOST TO START...</div>
+        <div class="waiting-legend">
+            <span class="leg-dot ladder"></span> SYNTAX CLIMB &nbsp;
+            <span class="leg-dot snake"></span> RUNTIME ERROR &nbsp;
+            <span class="leg-dot mega"></span> MEGA CLIMB &nbsp;
+            <span class="leg-dot pu"></span> POWER-UP
+        </div>
+    </div>
+
+    <!-- ═══════════════════ MAIN GAME ═══════════════════ -->
+    <ng-container *ngIf="gamePhase !== 'waiting' && gamePhase !== 'won'">
+        <!-- Top HUD -->
+        <div class="top-hud">
+            <div class="runtime-badge">RUNTIME</div>
+            <div class="game-title">R LADDER</div>
+            <div class="player-count-hud">{{players.length}}P GAME</div>
+        </div>
+
+        <div class="game-area">
+
+            <!-- BOARD -->
+            <div class="board-container">
+                <div class="board-grid">
+                    <div class="sq" *ngFor="let num of (board | flatten)" [class]="squareCellClass(num)"
+                        [class.sq-win]="num === 100">
+
+                        <span class="sq-num">{{num}}</span>
+                        <span class="sq-icon" *ngIf="isLadder(num) && !isMega(num)">🪜</span>
+                        <span class="sq-icon mega-glow" *ngIf="isMega(num)">⚡</span>
+                        <span class="sq-icon" *ngIf="isSnake(num) && num !== 99">🐍</span>
+                        <span class="sq-icon boss-glow" *ngIf="num === 99">☠️</span>
+                        <span class="sq-icon chest-glow" *ngIf="isPowerUp(num)">🎁</span>
+                        <span class="sq-icon" *ngIf="num === 100">🏆</span>
+
+                        <!-- Player tokens on this square -->
+                        <div class="sq-tokens">
+                            <div class="token" *ngFor="let p of playersOnSquare(num)"
+                                [class.moving-token]="movingPlayerId === p.id" [style.border-color]="p.color"
+                                [style.color]="p.color" [title]="p.name">
+                                {{p.name[0]}}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SIDEBAR -->
+            <ng-container *ngIf="players.length > 0">
+                <div class="sidebar">
+
+                    <!-- Current player display -->
+                    <div class="current-player-box" [style.border-color]="currentPlayer.color">
+                        <div class="cp-label">CURRENT TURN</div>
+                        <div class="cp-icon" [style.color]="currentPlayer.color">{{currentPlayer.name[0]}}</div>
+                        <div class="cp-name" [style.color]="currentPlayer.color">{{currentPlayer.name}}</div>
+                        <div class="cp-pos">SQ {{currentPlayer.position === 0 ? 'START' : currentPlayer.position}}</div>
+                    </div>
+
+
+                    <!-- Player list -->
+                    <div class="players-list">
+                        <div class="player-row" *ngFor="let p of players; let i = index"
+                            [class.active-player]="i === currentPlayerIdx">
+                            <div class="pr-icon" [style.color]="p.color">{{p.name[0]}}</div>
+                            <div class="pr-info">
+                                <span class="pr-name" [style.color]="p.color">{{p.name}}</span>
+                                <span class="pr-pos">SQ {{p.position === 0 ? 'START' : p.position}}</span>
+                            </div>
+                            <div class="pr-pups" *ngIf="p.powerUps.length > 0">
+                                <span *ngFor="let pu of p.powerUps; trackBy: trackByPU" class="pu-badge"
+                                    [title]="pu.name">{{pu.icon}}</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Power-ups -->
+                    <div class="powerup-panel" *ngIf="currentPlayer.powerUps.length > 0">
+                        <div class="pu-title">YOUR POWER-UPS</div>
+                        <div class="pu-grid">
+                            <button *ngFor="let pu of currentPlayer.powerUps; trackBy: trackByPU"
+                                class="pu-btn pixel-btn" [title]="pu.description"
+                                (click)="pu.type === 'SKIP_SNAKE' ? activateSkipSnake() : pu.type === 'DOUBLE_CLIMB' ? activateDoubleClimb() : pu.type === 'STEAL' ? (showSteal = !showSteal) : useHint()">
+                                {{pu.icon}} {{pu.name}}
+                            </button>
+                        </div>
+                        <div class="steal-select" *ngIf="showSteal">
+                            <p>STEAL FROM:</p>
+                            <button *ngFor="let op of otherPlayers" class="steal-btn pixel-btn"
+                                [disabled]="op.powerUps.length === 0" (click)="useSteal(op.id)">
+                                {{op.name}}
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Active buffs -->
+                    <div class="active-buffs" *ngIf="currentPlayer.skipSnakeActive || currentPlayer.doubleClimbActive">
+                        <div class="buff-tag" *ngIf="currentPlayer.skipSnakeActive">🛡️ SNAKE IMMUNITY ACTIVE</div>
+                        <div class="buff-tag" *ngIf="currentPlayer.doubleClimbActive">⬆️ DOUBLE CLIMB ACTIVE</div>
+                    </div>
+
+                </div>
+            </ng-container>
+        </div>
+
+        <!-- Turn bar -->
+        <div class="turn-bar">
+            <span *ngFor="let p of players; let i = index" class="turn-badge"
+                [class.turn-active]="i === currentPlayerIdx" [style.border-color]="p.color" [style.color]="p.color">
+                {{p.name}} · SQ{{p.position === 0 ? 0 : p.position}}
+            </span>
+        </div>
+    </ng-container>
+
+    <!-- ═══════════════════ POWER-UP ANIM ═══════════════════ -->
+    <ng-container *ngIf="gamePhase === 'powerup-anim' && activePowerUp && players.length > 0">
+        <div class="powerup-popup popup-overlay">
+            <div class="pu-popup-box">
+                <div class="cp-icon" [style.color]="currentPlayer.color" style="font-size:48px">
+                    {{currentPlayer.name[0]}}</div>
+                <div class="pu-popup-icon">{{activePowerUp.icon}}</div>
+                <div class="pu-popup-name">{{activePowerUp.name}}</div>
+                <div class="pu-popup-desc">{{activePowerUp.description}}</div>
+                <div class="pu-popup-player" [style.color]="currentPlayer.color">+1 FOR {{currentPlayer.name}}</div>
+            </div>
+        </div>
+    </ng-container>
+
+    <!-- ═══════════════════ QUESTION POPUP ═══════════════════ -->
+    <ng-container *ngIf="gamePhase === 'question' && currentQuestion && currentSpecial">
+        <div class="question-overlay popup-overlay">
+            <div class="question-modal">
+
+                <div class="timer-bar-wrap">
+                    <div class="timer-bar-fill" [style.width.%]="timerPct" [class.timer-urgent]="timerLeft <= 3"></div>
+                    <div class="timer-label">{{timerLeft}}s</div>
+                </div>
+
+                <div class="q-special-label" [class.label-snake]="currentSpecial.type === 'snake'"
+                    [class.label-ladder]="currentSpecial.type !== 'snake'">
+                    {{currentSpecial.label || 'QUESTION'}}
+                </div>
+
+                <button class="hint-btn pixel-btn" *ngIf="canUseHint()" (click)="useHint()">💡 USE HINT</button>
+
+                <div class="q-asker">
+                    <span [style.color]="currentPlayer.color">{{currentPlayer.name}}'S TURN</span>
+                </div>
+
+                <div class="q-text">{{currentQuestion.text}}</div>
+
+                <div class="q-options" *ngIf="!answerResult">
+                    <button *ngFor="let opt of currentQuestion.options; let i = index; trackBy: trackByIdx"
+                        class="opt-btn pixel-btn" [class.opt-eliminated]="isEliminated(i)" [disabled]="isEliminated(i)"
+                        (click)="handleAnswer(i)">
+                        {{opt}}
+                    </button>
+                </div>
+
+                <div class="q-result" *ngIf="answerResult">
+                    <div *ngFor="let opt of currentQuestion.options; let i = index; trackBy: trackByIdx"
+                        class="opt-result" [class.opt-correct]="i === currentQuestion.correct"
+                        [class.opt-wrong]="i === selectedAnswer && selectedAnswer !== currentQuestion.correct"
+                        [class.opt-selected]="i === selectedAnswer">
+                        {{opt}}
+                        <span *ngIf="i === currentQuestion.correct">✅</span>
+                        <span *ngIf="i === selectedAnswer && selectedAnswer !== currentQuestion.correct">❌</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </ng-container>
+
+    <!-- ═══════════════════ RESULT SCREEN ═══════════════════ -->
+    <div class="result-overlay popup-overlay" *ngIf="gamePhase === 'result'">
+        <div class="result-box" [class.result-climb]="resultType === 'climb'"
+            [class.result-fall]="resultType === 'fall'" [class.result-escape]="resultType === 'escape'"
+            [class.result-swallowed]="resultType === 'swallowed'">
+            <div class="result-icon">
+                <ng-container [ngSwitch]="resultType">
+                    <span *ngSwitchCase="'climb'">🚀</span>
+                    <span *ngSwitchCase="'fall'">💥</span>
+                    <span *ngSwitchCase="'escape'">🛡️</span>
+                    <span *ngSwitchCase="'swallowed'">🐍</span>
+                </ng-container>
+            </div>
+            <div class="result-msg">{{resultMessage}}</div>
+        </div>
+    </div>
+
+    <!-- ═══════════════════ WIN SCREEN ═══════════════════ -->
+    <div class="win-screen" *ngIf="gamePhase === 'won' && winner">
+        <div class="confetti-piece" *ngFor="let c of confetti; trackBy: trackByIdx" [style.left.%]="c.x"
+            [style.color]="c.color" [style.animation-delay.s]="c.delay">
+            {{c.char}}
+        </div>
+        <div class="win-box">
+            <div class="win-trophy">🏆</div>
+            <div class="cp-icon" [style.color]="winner.color" style="font-size:64px; margin: 10px 0">{{winner.name[0]}}
+            </div>
+            <div class="win-title" [style.color]="winner.color">{{winner.name}} WINS!</div>
+            <div class="win-sub">CLIMBED WITH KNOWLEDGE</div>
+            <div class="win-msg">CODE IS POWER. KNOWLEDGE IS PROGRESS.</div>
+            <div class="win-actions">
+                <button class="pixel-btn play-again-btn" (click)="beginGame()">▶ PLAY AGAIN</button>
+                <button class="pixel-btn back-btn" (click)="resetGame()">← WAITING ROOM</button>
+            </div>
+        </div>
+    </div>
+
+</div>

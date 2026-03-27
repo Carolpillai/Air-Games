@@ -33,19 +33,20 @@ export class Home {
       icon: '🏎️'
     },
     {
-      id: 'space-shooter',
-      name: 'Space Shooter',
-      description: 'Tilt to move, shake to shoot. Co-op vs waves of enemies.',
-      players: '1-4',
-      icon: '🚀'
-    },
-    {
       id: 'air-football',
       name: 'Air Football',
       description: 'Top-down soccer. Tilt to move, jerk phone to kick!',
       players: '2-6',
       icon: '⚽'
-    }
+    },
+    {
+      id: 'r-ladder',
+      name: 'Computer Ladder',
+      description: 'Classic Snakes & Ladders (CS Edition). Climb with knowledge!',
+      players: '2-4',
+      icon: '🪜',
+      local: false
+    },
   ];
 
   constructor(private router: Router) { }

@@ -2,20 +2,18 @@ import { Routes } from '@angular/router';
 import { Home } from './pages/home/home';
 import { Lobby } from './pages/lobby/lobby';
 import { Controller } from './pages/controller/controller';
-import { AirPong } from './pages/games/air-pong/air-pong';
-import { MultiplayerSnake } from './pages/games/multiplayer-snake/multiplayer-snake';
-import { AirRacing } from './pages/games/air-racing/air-racing';
-import { SpaceShooter } from './pages/games/space-shooter/space-shooter';
-import { AirFootball } from './pages/games/air-football/air-football';
 
 export const routes: Routes = [
     { path: '', component: Home },
     { path: 'lobby', component: Lobby },
     { path: 'controller/:roomCode', component: Controller },
-    { path: 'games/air-pong', component: AirPong },
-    { path: 'games/multiplayer-snake', component: MultiplayerSnake },
-    { path: 'games/air-racing', component: AirRacing },
-    { path: 'games/space-shooter', component: SpaceShooter },
-    { path: 'games/air-football', component: AirFootball },
+
+    // Lazy-loaded game routes — only downloaded when navigated to
+    { path: 'games/air-pong', loadComponent: () => import('./pages/games/air-pong/air-pong').then(m => m.AirPong) },
+    { path: 'games/multiplayer-snake', loadComponent: () => import('./pages/games/multiplayer-snake/multiplayer-snake').then(m => m.MultiplayerSnake) },
+    { path: 'games/air-racing', loadComponent: () => import('./pages/games/air-racing/air-racing').then(m => m.AirRacing) },
+    { path: 'games/air-football', loadComponent: () => import('./pages/games/air-football/air-football').then(m => m.AirFootball) },
+    { path: 'games/r-ladder', loadComponent: () => import('./pages/games/r-ladder/r-ladder').then(m => m.RLadder) },
+
     { path: '**', redirectTo: '' }
 ];

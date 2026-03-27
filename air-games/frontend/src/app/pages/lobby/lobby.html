@@ -54,8 +54,10 @@
             </div>
 
             <div class="lobby-actions">
-                <button class="start-btn primary-btn" [disabled]="players.length === 0" (click)="startGame()">START
-                    {{selectedGameId?.replace('-', ' ')?.toUpperCase()}}</button>
+                <button class="start-btn primary-btn" [disabled]="players.length < getRequiredPlayers()"
+                    (click)="startGame()">
+                    {{ players.length < getRequiredPlayers() ? 'WAITING (' + players.length + '/' + getRequiredPlayers() + ')' : 'START ' + selectedGameId?.replace('-', ' ')?.toUpperCase() }}
+                </button>
                 <p style="text-align: center; font-size: 10px; margin-top: 20px; color: #444; cursor: pointer; text-decoration: underline;"
                     (click)="isGamePinned = false">CHANGE GAME</p>
             </div>

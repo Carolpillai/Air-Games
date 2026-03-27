@@ -1,0 +1,51 @@
+// Updated Special Squares for R-Ladder (Classic Snakes & Ladders)
+// Based on image mapping
+
+const EASY_QUESTIONS: Question[] = [
+    { text: 'What does CPU stand for?', options: ['Central Processing Unit', 'Computer Personal Unit', 'Central Power Unit', 'Core Processing Unit'], correct: 0 },
+    { text: 'Which of these is the "brains" of the computer?', options: ['Hard Drive', 'Monitor', 'RAM', 'CPU'], correct: 3 },
+    { text: 'Which of these is an INPUT device?', options: ['Printer', 'Speaker', 'Monitor', 'Mouse'], correct: 3 },
+    { text: 'What is the full form of RAM?', options: ['Read Access Memory', 'Random Access Memory', 'Ready Active Memory', 'Remote Access Memory'], correct: 1 },
+    { text: 'Which of these is a programming language?', options: ['Python', 'HTML', 'CSS', 'Excel'], correct: 0 },
+    { text: 'What is the most common language used for building structure of Web pages?', options: ['Java', 'HTML', 'C++', 'Python'], correct: 1 },
+    { text: 'What does URL stand for?', options: ['Universal Resource Locator', 'Uniform Resource Locator', 'Unified Road Locator', 'Unique Resource Line'], correct: 1 },
+    { text: 'Which company developed the Windows OS?', options: ['Apple', 'Google', 'Microsoft', 'IBM'], correct: 2 },
+    { text: 'What is the main purpose of a Firewall?', options: ['Speed up internet', 'Security', 'Store files', 'Print documents'], correct: 1 },
+    { text: 'Which of these is used to browse the internet?', options: ['Chrome', 'Word', 'Photoshop', 'Zoom'], correct: 0 },
+    { text: 'What is the smallest unit of digital info?', options: ['Byte', 'Bit', 'Kilo', 'Mega'], correct: 1 },
+    { text: 'What does WWW stand for?', options: ['World Wide Web', 'World Whole Web', 'Wide World Window', 'Web World Wide'], correct: 0 },
+];
+
+const BOARD_SPECIAL: Record<number, SpecialSquare> = {
+    // Ladders (Blue)
+    4: { type: 'ladder', destination: 14, label: 'KNOWLEDGE CLIMB', question: EASY_QUESTIONS[0] },
+    9: { type: 'ladder', destination: 31, label: 'DATA LIFT', question: EASY_QUESTIONS[1] },
+    21: { type: 'ladder', destination: 42, label: 'FAST TRACK', question: EASY_QUESTIONS[2] },
+    28: { type: 'ladder', destination: 84, label: 'CLOUD ASCEND!', question: EASY_QUESTIONS[3] },
+    36: { type: 'ladder', destination: 44, label: 'LOGIC JUMP', question: EASY_QUESTIONS[4] },
+    51: { type: 'ladder', destination: 67, label: 'SERVER BOOST', question: EASY_QUESTIONS[5] },
+    71: { type: 'ladder', destination: 91, label: 'WI-FI UP!', question: EASY_QUESTIONS[6] },
+    80: { type: 'ladder', destination: 100, label: 'ULTIMATE CLIMB', question: EASY_QUESTIONS[7] },
+    52: { type: 'ladder', destination: 72, label: 'BINARY BOOST', question: EASY_QUESTIONS[8] },
+    73: { type: 'ladder', destination: 93, label: 'FIBER LIFT', question: EASY_QUESTIONS[9] },
+    77: { type: 'ladder', destination: 96, label: 'SYSTEM UPGRADE', question: EASY_QUESTIONS[10] },
+
+    // Snakes (Green)
+    10: { type: 'snake', destination: 9, label: 'BUFFER UNDERFLOW', question: EASY_QUESTIONS[11] },
+    24: { type: 'snake', destination: 1, label: 'SYSTEM CRASH', question: EASY_QUESTIONS[0] },
+    44: { type: 'snake', destination: 16, label: 'LATENCY DROP', question: EASY_QUESTIONS[1] },
+    54: { type: 'snake', destination: 34, label: 'PACKET LOSS', question: EASY_QUESTIONS[2] },
+    62: { type: 'snake', destination: 19, label: 'MALWARE ATTACK', question: EASY_QUESTIONS[3] },
+    81: { type: 'snake', destination: 63, label: 'DDOS WARNING', question: EASY_QUESTIONS[4] },
+    89: { type: 'snake', destination: 68, label: 'BUG DETECTED', question: EASY_QUESTIONS[5] },
+    92: { type: 'snake', destination: 88, label: 'UPTIME DROP', question: EASY_QUESTIONS[6] },
+    95: { type: 'snake', destination: 75, label: 'FIREWALL BLOCK', question: EASY_QUESTIONS[7] },
+    99: { type: 'snake', destination: 80, label: 'ACCESS DENIED', question: EASY_QUESTIONS[8] },
+    46: { type: 'snake', destination: 25, label: 'POWER OUTAGE', question: EASY_QUESTIONS[9] },
+
+    // Power-ups
+    15: { type: 'power-up', powerUpType: 'HINT_TOKEN' },
+    35: { type: 'power-up', powerUpType: 'SKIP_SNAKE' },
+    50: { type: 'power-up', powerUpType: 'DOUBLE_CLIMB' },
+    70: { type: 'power-up', powerUpType: 'STEAL' },
+};

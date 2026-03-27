@@ -17,6 +17,14 @@ class PongScene extends Phaser.Scene {
   private players: { [key: string]: { side: 'L' | 'R', name: string, nameText: Phaser.GameObjects.Text } } = {};
   private gameEnded: boolean = false;
 
+  // Smooth paddle movement — store desired Y target
+  private paddleTargetL: number = 300;
+  private paddleTargetR: number = 300;
+  private readonly LERP_SPEED = 0.07; // lower = slower/heavier paddle feel
+
+  // Ball speed constant — enforced every frame to prevent physics drift
+  private readonly BALL_SPEED = 380;
+
   constructor() {
     super('PongScene');
   }
@@ -29,6 +37,8 @@ class PongScene extends Phaser.Scene {
   create() {
     const width = this.cameras.main.width;
     const height = this.cameras.main.height;
+    this.paddleTargetL = height / 2;
+    this.paddleTargetR = height / 2;
 
     // Paddles
     this.paddleL = this.add.rectangle(30, height / 2, 20, 100, 0xe8ff00);
@@ -51,7 +61,12 @@ class PongScene extends Phaser.Scene {
     const ballBody = this.ball.body as Phaser.Physics.Arcade.Body;
     ballBody.setBounce(1, 1);
     ballBody.setCollideWorldBounds(true);
-    ballBody.setVelocity(300, 300);
+    // Start at a 45° angle so it never goes perfectly horizontal
+    const dir = Math.random() > 0.5 ? 1 : -1;
+    const vx = dir * this.BALL_SPEED * Math.cos(Math.PI / 4);
+    const vy = (Math.random() > 0.5 ? 1 : -1) * this.BALL_SPEED * Math.sin(Math.PI / 4);
+    ballBody.setVelocity(vx, vy);
+    ballBody.setMaxVelocity(this.BALL_SPEED * 1.5, this.BALL_SPEED * 1.5);
 
     // Collisions
     this.physics.add.collider(this.ball, this.paddleL);
@@ -75,7 +90,7 @@ class PongScene extends Phaser.Scene {
       shadow: { color: '#000000', fill: true, offsetX: 8, offsetY: 8, blur: 0 }
     }).setOrigin(0.5).setVisible(false).setDepth(100);
 
-    // Socket Input
+    // Socket Input — only update the TARGET position; actual movement happens in update()
     this.socket.on('player-motion', (data: any) => {
       if (this.gameEnded) return;
 
@@ -94,26 +109,73 @@ class PongScene extends Phaser.Scene {
       }
 
       const player = this.players[data.playerId];
-      const paddle = player.side === 'L' ? this.paddleL : this.paddleR;
 
-      // Update name text position
-      player.nameText.y = paddle.y - 70;
-
+      // Map tilt to a target Y across the full canvas height (60–540 to keep paddle on screen)
       let tilt = 0;
-      if (data.isTouch) {
+      if (data.isTouch || data.isDpad) {
+        // Touch/D-pad: beta is already –45..+45 relative
         tilt = data.beta;
       } else {
-        tilt = (data.beta - 45);
+        // Gyro: beta 0° = phone flat, ~90° = upright; centre at 45°
+        tilt = data.beta - 45;
       }
 
-      const targetY = Phaser.Math.Clamp(300 + tilt * 8, 50, 550);
-      paddle.y = Phaser.Math.Linear(paddle.y, targetY, 0.2);
+      // tilt range is roughly –45 to +45; map to canvas Y (60 top margin, 540 bottom margin)
+      const targetY = Phaser.Math.Clamp(
+        height / 2 + tilt * ((height / 2 - 60) / 45),
+        60, height - 60
+      );
+
+      if (player.side === 'L') {
+        this.paddleTargetL = targetY;
+      } else {
+        this.paddleTargetR = targetY;
+      }
     });
   }
 
-  override update() {
+  override update(_time: number, delta: number) {
     if (this.gameEnded) return;
 
+    // --- Smooth paddle movement every frame ---
+    // Normalize lerp speed to frame delta so it feels the same at any FPS
+    const t = 1 - Math.pow(1 - this.LERP_SPEED, delta / 16.67);
+    const height = this.cameras.main.height;
+    const margin = 50; // half paddle height
+
+    this.paddleL.y = Phaser.Math.Linear(
+      this.paddleL.y,
+      Phaser.Math.Clamp(this.paddleTargetL, margin, height - margin),
+      t
+    );
+    this.paddleR.y = Phaser.Math.Linear(
+      this.paddleR.y,
+      Phaser.Math.Clamp(this.paddleTargetR, margin, height - margin),
+      t
+    );
+
+    // Sync paddle physics bodies WITHOUT calling reset()/stop() — just move the body rectangle
+    const bodyL = this.paddleL.body as Phaser.Physics.Arcade.Body;
+    const bodyR = this.paddleR.body as Phaser.Physics.Arcade.Body;
+    bodyL.position.set(this.paddleL.x - bodyL.halfWidth, this.paddleL.y - bodyL.halfHeight);
+    bodyR.position.set(this.paddleR.x - bodyR.halfWidth, this.paddleR.y - bodyR.halfHeight);
+
+    // --- Ball speed enforcement: keep constant speed to prevent arcade physics drift ---
+    const ballBody = this.ball.body as Phaser.Physics.Arcade.Body;
+    const spd = Math.sqrt(ballBody.velocity.x ** 2 + ballBody.velocity.y ** 2);
+    if (spd > 1) {
+      const scale = this.BALL_SPEED / spd;
+      ballBody.setVelocity(ballBody.velocity.x * scale, ballBody.velocity.y * scale);
+    }
+
+    // Update player name text to follow paddle
+    for (const id in this.players) {
+      const p = this.players[id];
+      const paddle = p.side === 'L' ? this.paddleL : this.paddleR;
+      p.nameText.y = paddle.y - 70;
+    }
+
+    // --- Scoring ---
     if (this.ball.x < 15) {
       this.scoreR++;
       this.resetBall();
@@ -124,14 +186,14 @@ class PongScene extends Phaser.Scene {
     this.scoreText.setText(`${this.scoreL} - ${this.scoreR}`);
 
     // Check for winner
-    if (this.scoreL >= 15 || this.scoreR >= 15) {
+    if (this.scoreL >= 10 || this.scoreR >= 10) {
       this.endGame();
     }
   }
 
   endGame() {
     this.gameEnded = true;
-    const winnerSide = this.scoreL >= 15 ? 'L' : 'R';
+    const winnerSide = this.scoreL >= 10 ? 'L' : 'R';
     let winnerName = 'PLAYER';
 
     // Find name from players map
@@ -165,13 +227,15 @@ class PongScene extends Phaser.Scene {
   }
 
   resetBall() {
-    this.ball.x = 400;
-    this.ball.y = 300;
+    this.ball.setPosition(400, 300);
     const ballBody = this.ball.body as Phaser.Physics.Arcade.Body;
-    ballBody.setVelocity(
-      Math.random() > 0.5 ? 300 : -300,
-      Math.random() > 0.5 ? 200 : -200
-    );
+    ballBody.reset(400, 300);
+    // Fire at a random diagonal angle — never purely horizontal or vertical
+    const angle = (Math.random() * 60 - 30) * (Math.PI / 180); // -30° to +30°
+    const dir = Math.random() > 0.5 ? 1 : -1;
+    const vx = dir * this.BALL_SPEED * Math.cos(angle);
+    const vy = (Math.random() > 0.5 ? 1 : -1) * this.BALL_SPEED * Math.sin(angle);
+    ballBody.setVelocity(vx, vy);
   }
 }
 
@@ -213,9 +277,13 @@ export class AirPong implements OnInit, OnDestroy {
       parent: 'game-container',
       width: 800,
       height: 600,
+      roundPixels: true,     // prevents sub-pixel jitter on object edges
       physics: {
         default: 'arcade',
-        arcade: { debug: false }
+        arcade: {
+          debug: false,
+          fps: 120            // 2× physics steps per frame = smoother collisions
+        }
       },
       scene: PongScene
     };

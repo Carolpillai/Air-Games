@@ -20,9 +20,10 @@ export class Lobby implements OnInit, OnDestroy {
 
   games = [
     { id: 'air-pong', name: 'AIR PONG', icon: '🏓', players: '1-2', description: 'CLASSIC ARCADE ACTION REIMAGINED.' },
-    { id: 'air-racing', name: 'AIR RACING', icon: '🏎️', players: '1-4', description: 'HIGH OCTANE TILT-STEERING FUN.' },
-    { id: 'multiplayer-snake', name: 'PIXEL SNAKE', icon: '🐍', players: '1-8', description: 'CO-OP OR COMPETITIVE SLITHERING.' },
-    { id: 'space-shooter', name: 'SPACE DODGE', icon: '🚀', players: '1-4', description: 'NAVIGATE THE STARS TOGETHER.' }
+    { id: 'air-racing', name: 'BIKE RUSH', icon: '🏍️', players: '2-5', description: 'ROAD RASH STYLE! DODGE 10 BIKES TO WIN!' },
+    { id: 'multiplayer-snake', name: 'PIXEL SNAKE', icon: '🐍', players: '1-10', description: 'CO-OP OR COMPETITIVE SLITHERING.' },
+    { id: 'r-ladder', name: 'COMPUTER LADDER', icon: '🪜', players: '2-4', description: 'CLASSIC CS EDITION. CLIMB WITH KNOWLEDGE!' },
+    { id: 'air-football', name: 'AIR FOOTBALL', icon: '⚽', players: '2-6', description: 'TOP-DOWN SOCCER. TILT TO MOVE, JERK PHONE TO KICK!' },
   ];
 
   private socket: Socket | null = null;
@@ -152,8 +153,22 @@ export class Lobby implements OnInit, OnDestroy {
     this.cdr.detectChanges();
   }
 
+  getRequiredPlayers(): number {
+    if (!this.selectedGameId) return 1;
+    const game = this.games.find(g => g.id === this.selectedGameId);
+    if (!game) return 1;
+    const parts = game.players.split('-');
+    // Prioritize the minimum player count (first number in the range)
+    const min = parseInt(parts[0]);
+    return isNaN(min) ? 1 : min;
+  }
+
   startGame() {
     if (this.socket && this.selectedGameId) {
+      if (this.players.length < this.getRequiredPlayers()) {
+        alert(`NEED ${this.getRequiredPlayers()} PLAYERS TO START THIS GAME!`);
+        return;
+      }
       this.socket.emit('start-game', { roomCode: this.roomCode, gameId: this.selectedGameId });
     }
   }

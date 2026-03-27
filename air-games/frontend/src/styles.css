@@ -1,102 +1,99 @@
+/* Fonts non-blocking loaded in index.html via media="print" onload trick */
+
+/* ── Design Tokens ─────────────────────────────────────────────────────────── */
 :root {
   --primary-yellow: #FFE000;
-  --bg-deep: #05051a;
-  --font-pixel: 'Press Start 2P', cursive;
+  --bg-deep: #0d1033;
+  --font-pixel: 'Press Start 2P', monospace;
+  --font-vt: 'VT323', monospace;
+  --pixel-shadow: 2px 2px 0px #000;
+}
+
+/* ── Base Reset ────────────────────────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
 
 body {
   background: var(--bg-deep);
   color: #fff;
   font-family: var(--font-pixel);
-  margin: 0;
   overflow-x: hidden;
   min-height: 100vh;
 }
 
-/* 2000s Retro Sky */
-.stars-bg {
+/* ── Full-Screen Video Background ────────────────────────────────────────── */
+.bg-video {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
   height: 100%;
+  object-fit: cover;
+  /* fills the screen, crops edges like background-size: cover */
   z-index: -3;
-  background: linear-gradient(to bottom, #05051a 0%, #1a1a4a 100%);
-}
-
-.stars-bg::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-image:
-    radial-gradient(1.5px 1.5px at 10% 10%, #fff, transparent),
-    radial-gradient(1.5px 1.5px at 30% 25%, #fff, transparent),
-    radial-gradient(1.5px 1.5px at 50% 15%, #fff, transparent),
-    radial-gradient(1.5px 1.5px at 70% 35%, #fff, transparent),
-    radial-gradient(1.5px 1.5px at 90% 20%, #fff, transparent);
-  background-size: 300px 300px;
-}
-
-/* Simple Pixel Ground - Removed Black Box */
-.pixel-landscape {
-  display: none;
-}
-
-/* The Trees */
-.trees-container {
-  position: fixed;
-  bottom: 100px;
-  left: 0;
-  width: 100%;
-  height: 100px;
-  z-index: -1;
   pointer-events: none;
 }
 
-.tree {
-  position: absolute;
-  bottom: 0;
-  width: 32px;
-  height: 64px;
-  background: #0d3d1e;
-  /* Dark pixel green */
-  clip-path: polygon(50% 0%, 0% 100%, 100% 100%);
-  /* Simple triangle tree */
-  box-shadow: 0 10px 0 #1a1a2e;
-  /* Trunk shadow */
+/* Vignette + dark tint overlay so text stays readable */
+.bg-video-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -2;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at center, transparent 30%, rgba(5, 5, 20, 0.80) 120%),
+    rgba(5, 5, 26, 0.35);
 }
 
-/* Positioning 3 trees */
-.tree-1 {
-  left: 15%;
-  height: 80px;
-  width: 40px;
+/* Hide old tree and landscape elements — fully replaced by video */
+.stars-bg,
+.trees-container,
+.tree,
+.pixel-landscape {
+  display: none !important;
 }
 
-.tree-2 {
-  left: 45%;
-  height: 60px;
-  width: 30px;
-  opacity: 0.8;
-}
 
-.tree-3 {
-  right: 20%;
-  height: 90px;
-  width: 45px;
-}
-
-/* HUD Typography */
-h1 {
-  color: var(--primary-yellow) !important;
-  font-size: 24px;
-  text-shadow: 3px 3px 0px #000;
+/* ── Typography ────────────────────────────────────────────────────────────── */
+h1,
+h2,
+h3 {
+  font-family: var(--font-pixel);
+  color: var(--primary-yellow);
+  text-shadow: var(--pixel-shadow);
   text-transform: uppercase;
 }
 
+h1 {
+  font-size: clamp(16px, 4vw, 36px);
+}
+
+h2 {
+  font-size: clamp(12px, 3vw, 24px);
+}
+
+h3 {
+  font-size: clamp(10px, 2vw, 18px);
+}
+
+p,
+li,
+span {
+  font-family: var(--font-vt);
+  font-size: 22px;
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.5;
+}
+
+/* ── Pixel Buttons ─────────────────────────────────────────────────────────── */
 button {
   font-family: var(--font-pixel);
   background: #000;
@@ -104,14 +101,33 @@ button {
   border: 3px solid var(--primary-yellow) !important;
   padding: 12px 24px;
   cursor: pointer;
-  font-size: 12px;
+  font-size: 11px;
   text-transform: uppercase;
-  box-shadow: 4px 4px 0px #000;
+  letter-spacing: 1px;
+  box-shadow: 4px 4px 0px #000, 0 0 0 1px rgba(255, 224, 0, 0.15);
+  transition: background 0.08s, transform 0.08s, box-shadow 0.08s;
+  image-rendering: pixelated;
 }
 
 button:hover {
   background: var(--primary-yellow);
   color: #000 !important;
   transform: translate(2px, 2px);
-  box-shadow: 2px 2px 0px #000;
+  box-shadow: 2px 2px 0px #000, 0 0 16px rgba(255, 224, 0, 0.4);
+}
+
+button:active {
+  transform: translate(4px, 4px);
+  box-shadow: none;
+}
+
+/* ── Animations ──────────────────────────────────────────────────────────── */
+@keyframes floating {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-10px) rotate(0.5deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.floating {
+  animation: floating 3s ease-in-out infinite;
 }

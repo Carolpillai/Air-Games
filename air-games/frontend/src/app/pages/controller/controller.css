@@ -35,16 +35,32 @@
     max-width: 250px;
 }
 
-.player-info {
-    font-family: var(--font-hero);
-    font-size: 18px;
-    color: var(--primary-color);
+.header {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 5px 20px;
+}
+
+.status {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.controls-area {
+    width: 100%;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .game-name {
-    font-family: var(--font-hero);
-    font-size: 14px;
-    color: var(--primary-color);
+    margin-bottom: 20px;
+    text-align: center;
 }
 
 .hint {
@@ -61,4 +77,542 @@
 .tilt-ball {
     background: var(--primary-color);
     box-shadow: 0 0 15px var(--primary-color);
+}
+
+/* ── Gyro detection badge ── */
+.sensor-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-family: var(--font-sub, monospace);
+    font-size: 9px;
+    letter-spacing: 1px;
+    padding: 6px 14px;
+    border-radius: 2px;
+    margin-bottom: 20px;
+    border: 2px solid;
+    transition: all 0.3s ease;
+}
+
+.badge-checking {
+    border-color: #555;
+    color: #777;
+    background: rgba(80, 80, 80, 0.15);
+    animation: pulse-dim 1s infinite alternate;
+}
+
+.badge-gyro {
+    border-color: #00ff88;
+    color: #00ff88;
+    background: rgba(0, 255, 136, 0.08);
+    box-shadow: 0 0 10px rgba(0, 255, 136, 0.2);
+}
+
+.badge-nogyro {
+    border-color: #ffaa00;
+    color: #ffaa00;
+    background: rgba(255, 170, 0, 0.08);
+    box-shadow: 0 0 10px rgba(255, 170, 0, 0.2);
+}
+
+@keyframes pulse-dim {
+    from { opacity: 0.5; }
+    to { opacity: 1; }
+}
+
+/* ── Gyro info card ── */
+.gyro-info-box {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    border: 2px solid #00ff88;
+    background: rgba(0, 255, 136, 0.06);
+    padding: 12px 20px;
+    margin-bottom: 18px;
+    border-radius: 2px;
+    width: 100%;
+    max-width: 260px;
+}
+
+.gyro-info-box.nogyro {
+    border-color: #ffaa00;
+    background: rgba(255, 170, 0, 0.06);
+}
+
+.gyro-icon { font-size: 26px; }
+.gyro-label {
+    font-family: var(--font-hero, monospace);
+    font-size: 10px;
+    color: #00ff88;
+    letter-spacing: 1px;
+}
+.gyro-info-box.nogyro .gyro-label { color: #ffaa00; }
+.gyro-sub {
+    font-family: var(--font-sub, monospace);
+    font-size: 8px;
+    color: #888;
+    margin-top: 3px;
+    letter-spacing: 0.5px;
+}
+
+/* ── Racing Boost Styles ── */
+.boost-btn {
+    width: 140px;
+    height: 70px;
+    background: linear-gradient(135deg, #ff8c00 0%, #ff4400 100%);
+    border: 3px solid #ffcc00;
+    border-radius: 35px;
+    color: #fff;
+    font-family: var(--font-hero);
+    font-size: 14px;
+    letter-spacing: 2px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 20px rgba(255, 68, 0, 0.4);
+    margin: 20px auto;
+    transition: transform 0.1s, box-shadow 0.1s;
+    touch-action: none;
+}
+
+.boost-btn:active {
+    transform: scale(0.9) translateY(4px);
+    box-shadow: 0 0 40px #ff4400;
+}
+
+.racing-dpad-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+/* ── D-Pad Remote ── */
+.dpad-controller { width: 100%; }
+
+.dpad-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    margin: 24px auto;
+    user-select: none;
+    -webkit-user-select: none;
+}
+
+.dpad-row {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.dpad-middle { gap: 0; }
+
+.dpad-btn {
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.6);
+    border: 3px solid var(--primary-color, #00ffcc);
+    color: var(--primary-color, #00ffcc);
+    font-size: 28px;
+    font-family: var(--font-hero, monospace);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s, box-shadow 0.1s, transform 0.08s;
+    outline: none;
+    touch-action: none;
+}
+
+.dpad-btn:active,
+.dpad-btn.active {
+    background: var(--primary-color, #00ffcc);
+    color: #000;
+    box-shadow: 0 0 20px var(--primary-color, #00ffcc);
+    transform: scale(0.93);
+}
+
+.dpad-up { border-radius: 12px 12px 0 0; }
+.dpad-down { border-radius: 0 0 12px 12px; }
+.dpad-left { border-radius: 12px 0 0 12px; }
+.dpad-right { border-radius: 0 12px 12px 0; }
+
+.dpad-center {
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.8);
+    border: 3px solid var(--primary-color, #00ffcc);
+    color: #333;
+    font-size: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* ── Snake Circular Controller ── */
+.snake-circle-wrap {
+    margin: 40px auto;
+    width: 250px;
+    height: 250px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    user-select: none;
+    touch-action: none;
+}
+
+.joystick-container {
+    width: 220px;
+    height: 220px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    touch-action: none;
+}
+
+.joystick-base {
+    width: 180px;
+    height: 180px;
+    background: radial-gradient(circle, rgba(232, 255, 0, 0.05) 0%, rgba(0, 0, 0, 0.8) 70%);
+    border: 3px solid rgba(232, 255, 0, 0.3);
+    border-radius: 50%;
+    position: relative;
+    box-shadow: inset 0 0 20px rgba(0, 0, 0, 0.8), 0 0 15px rgba(232, 255, 0, 0.1);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.j-guide {
+    position: absolute;
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.2);
+    font-family: var(--font-hero);
+}
+
+.j-up { top: 15px; }
+.j-down { bottom: 15px; }
+.j-left { left: 15px; }
+.j-right { right: 15px; }
+
+.joystick-knob {
+    width: 85px;
+    height: 85px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #333 0%, #000 100%);
+    border: 4px solid #e8ff00;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8), 0 0 20px rgba(232, 255, 0, 0.4);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    transition: box-shadow 0.1s;
+    z-index: 10;
+}
+
+.knob-inner {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: #e8ff00;
+    box-shadow: inset 0 2px 10px rgba(255, 255, 255, 0.8), 0 0 25px #e8ff00;
+    pointer-events: none;
+}
+
+/* ── Savage Ludo Controls ── */
+.ludo-controls {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    padding: 20px 0;
+    width: 100%;
+}
+
+.ludo-roll-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    color: #fff;
+    background: linear-gradient(135deg, #440000, #880000);
+    border: 3px solid #ff3333;
+    padding: 18px 36px;
+    cursor: pointer;
+    width: 90%;
+    max-width: 320px;
+}
+
+.ludo-coins {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.ludo-coin-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 10px;
+    color: #ffcc00;
+    background: rgba(0,0,0,0.7);
+    border: 2px solid #ffcc00;
+    padding: 16px 8px;
+    cursor: pointer;
+}
+
+/* -- TOC BATTLE & OTHERS -- */
+.toc-quiz-controller {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+    padding: 10px;
+}
+
+.toc-mcq-screen {
+    width: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    border: 3px solid #FFE000;
+    padding: 20px;
+    border-radius: 8px;
+}
+
+.toc-mcq-btn {
+    background: #111;
+    border: 2px solid #555;
+    padding: 18px;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 8px;
+    width: 100%;
+}
+
+.toc-opt-lbl {
+    font-family: var(--font-hero);
+    color: #FFE000;
+    border: 1px solid #FFE000;
+    width: 32px;
+    height: 32px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.toc-opt-text { color: #fff; }
+
+/* ── Savage Ludo HUD ────────────────────────────────────────────────────── */
+.ludo-hud {
+    width: 90%;
+    margin: 20px auto;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+}
+
+.turn-banner {
+    background: #ff0044;
+    color: white;
+    padding: 10px 30px;
+    font-family: var(--font-hero, monospace);
+    font-size: 24px;
+    font-weight: bold;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(255, 0, 68, 0.6);
+    animation: pulse-turn 1s infinite alternate;
+}
+
+@keyframes pulse-turn {
+    from { transform: scale(1); box-shadow: 0 0 10px rgba(255, 0, 68, 0.4); }
+    to { transform: scale(1.05); box-shadow: 0 0 25px rgba(255, 0, 68, 0.8); }
+}
+
+.dice-box {
+    width: 120px;
+    height: 120px;
+    background: rgba(255, 255, 255, 0.1);
+    border: 2px solid rgba(255, 255, 255, 0.3);
+    border-radius: 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.dice-box.can-roll {
+    border-color: #00ffcc;
+    background: rgba(0, 255, 204, 0.1);
+    box-shadow: 0 0 15px rgba(0, 255, 204, 0.3);
+}
+
+.dice-val {
+    font-size: 60px;
+    color: white;
+    text-shadow: 0 0 10px rgba(255,255,255,0.5);
+}
+
+.dice-val.rolling {
+    animation: rolling-dice 0.1s infinite linear;
+}
+
+@keyframes rolling-dice {
+    0% { transform: rotate(0); }
+    100% { transform: rotate(360deg); }
+}
+
+.roll-hint {
+    font-size: 10px;
+    color: #888;
+    margin-top: 5px;
+    letter-spacing: 2px;
+}
+
+.coin-btns {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    width: 100%;
+}
+
+.coin-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 15px;
+    font-family: var(--font-hero, monospace);
+    font-size: 20px;
+    border-radius: 12px;
+    transition: all 0.2s;
+}
+
+.coin-btn:active {
+    background: #00ffcc;
+    color: #000;
+    transform: scale(0.9);
+}
+
+/* ── R-LADDER Dice Styles ── */
+.rl-dice-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    margin: 40px 0;
+    width: 100%;
+}
+
+.can-roll .dice-3d {
+    animation: pulse-dice 1.5s infinite alternate;
+}
+
+@keyframes pulse-dice {
+    from { filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.2)); }
+    to { filter: drop-shadow(0 0 20px #00ffcc); }
+}
+
+.dice-3d {
+    width: 100px;
+    height: 100px;
+    position: relative;
+    transform-style: preserve-3d;
+    transition: transform 0.6s cubic-bezier(0.17, 0.67, 0.83, 0.67);
+    margin: 20px;
+}
+
+.dice-3d.rolling {
+    animation: roll-anim 0.2s infinite linear;
+}
+
+@keyframes roll-anim {
+    0% { transform: rotateX(0) rotateY(0) rotateZ(0); }
+    100% { transform: rotateX(360deg) rotateY(360deg) rotateZ(360deg); }
+}
+
+/* Precise rotations for faces */
+.dice-3d[data-face="1"] { transform: rotateX(0deg) rotateY(0deg); }
+.dice-3d[data-face="2"] { transform: rotateX(-90deg) rotateY(0deg); }
+.dice-3d[data-face="3"] { transform: rotateX(0deg) rotateY(-90deg); }
+.dice-3d[data-face="4"] { transform: rotateX(0deg) rotateY(90deg); }
+.dice-3d[data-face="5"] { transform: rotateX(90deg) rotateY(0deg); }
+.dice-3d[data-face="6"] { transform: rotateX(180deg) rotateY(0deg); }
+
+.face {
+    position: absolute;
+    width: 100px;
+    height: 100px;
+    background: #fff;
+    border: 3px solid #eee;
+    border-radius: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: inset 0 0 15px rgba(0,0,0,0.1);
+}
+
+.face::after {
+    content: '';
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    padding: 10px;
+}
+
+/* Dots logic using pseudo-elements or specific backgrounds */
+.front  { transform: rotateY(0deg) translateZ(50px); }
+.back   { transform: rotateY(180deg) translateZ(50px); }
+.left   { transform: rotateY(-90deg) translateZ(50px); }
+.right  { transform: rotateY(90deg) translateZ(50px); }
+.top    { transform: rotateX(90deg) translateZ(50px); }
+.bottom { transform: rotateX(-90deg) translateZ(50px); }
+
+/* Dot patterns */
+.front::after { background: radial-gradient(circle, #000 15%, transparent 15%) center / 100% 100%; background-repeat: no-repeat; }
+.back::after { background: radial-gradient(circle, #000 15%, transparent 15%) 30% 30%, radial-gradient(circle, #000 15%, transparent 15%) 70% 30%, radial-gradient(circle, #000 15%, transparent 15%) 30% 70%, radial-gradient(circle, #000 15%, transparent 15%) 70% 70%, radial-gradient(circle, #000 15%, transparent 15%) 30% 50%, radial-gradient(circle, #000 15%, transparent 15%) 70% 50%; } /* 6 */
+.left::after { background: radial-gradient(circle, #000 15%, transparent 15%) 30% 30%, radial-gradient(circle, #000 15%, transparent 15%) 50% 50%, radial-gradient(circle, #000 15%, transparent 15%) 70% 70%; } /* 3 */
+.right::after { background: radial-gradient(circle, #000 15%, transparent 15%) 30% 30%, radial-gradient(circle, #000 15%, transparent 15%) 70% 30%, radial-gradient(circle, #000 15%, transparent 15%) 30% 70%, radial-gradient(circle, #000 15%, transparent 15%) 70% 70%; } /* 4 */
+.top::after { background: radial-gradient(circle, #000 15%, transparent 15%) 30% 30%, radial-gradient(circle, #000 15%, transparent 15%) 70% 70%; } /* 2 */
+.bottom::after { background: radial-gradient(circle, #000 15%, transparent 15%) 30% 30%, radial-gradient(circle, #000 15%, transparent 15%) 70% 70%, radial-gradient(circle, #000 15%, transparent 15%) 30% 70%, radial-gradient(circle, #000 15%, transparent 15%) 70% 30%, radial-gradient(circle, #000 15%, transparent 15%) 50% 50%; } /* 5 */
+
+.roll-hint-text {
+    font-family: var(--font-hero);
+    font-size: 12px;
+    color: #44ffaa;
+    text-shadow: 0 0 10px rgba(68, 255, 170, 0.4);
+}
+
+.roll-result-text {
+    font-family: var(--font-hero);
+    font-size: 16px;
+    color: #fff;
+}
+
+.rl-turn-banner {
+    padding: 10px 20px;
+    border: 2px solid;
+    border-radius: 6px;
+    margin-bottom: 10px;
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.rl-turn-label {
+    font-family: var(--font-hero);
+    font-size: 14px;
+}
+
+.footer {
+    margin-top: auto;
+    padding: 20px;
+    font-family: var(--font-sub, monospace);
+    font-size: 10px;
+    color: #555;
+    letter-spacing: 1px;
 }
